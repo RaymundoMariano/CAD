@@ -1,0 +1,60 @@
+﻿@model IEnumerable<Cadastro.Domain.Models.EmpresaModel>
+
+@{
+    ViewData["Title"] = "EditFilial";
+}
+
+@{
+    var empresa = (Cadastro.Domain.Models.EmpresaModel)ViewBag.Empresa;
+}
+
+@await Html.PartialAsync("~/Views/Partial/_Empresa.cshtml", empresa)
+
+<h1>Filiais</h1>
+<form method="post">
+    <div class="form-group">
+        <div class="form-group-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Cgc)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Nome)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Tipo)
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <input asp-for="@item.Selected" class="form-check-input" />
+                                @Html.DisplayFor(modelItem => item.Cgc)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Nome)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.TipoEmpresa)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="form-group-footer">
+            @if (Model != null)
+            {
+                <input type="submit" value="Atualizar" class="btn btn-primary" style="width:auto" />
+            }
+            <a asp-action="IndexFilial" asp-route-empresaId="@empresa.EmpresaId"
+               class="btn btn-primary" style="width:auto">Cancelar</a>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,16 @@
+﻿@model Cadastro.Domain.Models.PessoaModel
+
+@{
+    ViewData["Title"] = "IndexEndereco";
+}
+
+@await Html.PartialAsync("~/Views/Partial/_Pessoa.cshtml")
+@await Html.PartialAsync("~/Views/Partial/_IndexEndereco.cshtml", Model.EnderecoPessoas)
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.PessoaId">Voltar</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

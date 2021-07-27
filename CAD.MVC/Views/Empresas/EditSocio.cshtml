@@ -1,0 +1,80 @@
+﻿@model List<Cadastro.Domain.Models.PessoaModel>
+
+@{
+    ViewData["Title"] = "EditSocio";
+}
+
+@{
+    var empresa = (Cadastro.Domain.Models.EmpresaModel)ViewBag.Empresa;
+}
+
+@{
+    var eTipoEmpresa = (Cadastro.Domain.Enums.ETipoEmpresa)empresa.Tipo;
+    if (eTipoEmpresa == Cadastro.Domain.Enums.ETipoEmpresa.Matriz)
+    {
+        @await Html.PartialAsync("~/Views/Partial/_Empresa.cshtml", empresa)
+    }
+    else
+    {
+        @await Html.PartialAsync("~/Views/Partial/_Filial.cshtml", empresa)  
+    }
+}
+
+<h1>Sócios</h1>
+<form method="post">
+    <div class="form-group">
+        <div class="form-group-body">
+            <table class="table">
+                <thead>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => item.Nome)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => item.DataNascimento)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => item.NomeMae)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => item.Cpf)
+                            </th>
+                            <th></th>
+                        </tr>
+                        break;
+                    }
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <input asp-for="@item.Selected" class="form-check-input" />
+                                @Html.DisplayFor(modelItem => item.Nome)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.DataNascimento)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.NomeMae)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Cpf)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="form-group-footer">
+            @if (Model != null)
+            {
+                <input type="submit" value="Atualizar" class="btn btn-primary" style="width:auto" />
+            }
+            <a asp-action="IndexSocio" asp-route-empresaId="@empresa.EmpresaId"
+             class="btn btn-primary" style="width:auto">Cancelar</a>
+        </div>
+    </div>
+</form>

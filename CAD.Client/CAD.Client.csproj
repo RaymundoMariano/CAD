@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CAD.Domain\CAD.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Cadastro.Domain">
+      <HintPath>..\..\..\GitHub\Cadastro\Cadastro.Domain\bin\Debug\net5.0\Cadastro.Domain.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

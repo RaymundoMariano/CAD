@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Cadastro.Domain">
+      <HintPath>..\..\..\GitHub\Cadastro\Cadastro.Domain\bin\Debug\net5.0\Cadastro.Domain.dll</HintPath>
+    </Reference>
+    <Reference Include="Seguranca.Domain">
+      <HintPath>..\..\..\GitHub\Seguranca\Seguranca.Domain\bin\Debug\net5.0\Seguranca.Domain.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
