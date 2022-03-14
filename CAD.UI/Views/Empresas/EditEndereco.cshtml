@@ -1,0 +1,23 @@
+﻿@model CAD.Domain.Models.Aplicacao.EmpresaModel
+
+@{
+    ViewData["Title"] = "EditEndereco";
+}
+
+@{
+    var eTipoEmpresa = (CAD.Domain.Enums.ETipoEmpresa)Model.Tipo;
+    if (eTipoEmpresa == CAD.Domain.Enums.ETipoEmpresa.Matriz)
+    {
+        @await Html.PartialAsync("~/Views/Partial/_Empresa.cshtml")
+    }
+    else
+    {
+        @await Html.PartialAsync("~/Views/Partial/_Filial.cshtml")  
+    }
+}
+
+@await Html.PartialAsync("~/Views/Partial/_EditEndereco.cshtml", Model.Endereco)
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

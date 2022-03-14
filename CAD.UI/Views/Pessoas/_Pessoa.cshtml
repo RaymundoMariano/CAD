@@ -1,0 +1,42 @@
+﻿@model CAD.Domain.Models.Aplicacao.PessoaModel
+
+<h1>Pessoa</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Nome)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DataNascimento)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NomeMae)
+            </th>
+              <th>
+                @Html.DisplayNameFor(model => model.Cpf)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                @Html.DisplayFor(model => model.Nome)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.DataNascimento)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.NomeMae)
+            </td>
+              <td>
+                @Html.DisplayFor(model => model.Cpf)
+            </td>
+            <td>
+                @Html.ActionLink("Endereços", "IndexEndereco", new { id=Model.PessoaId })
+            </td>
+        </tr>
+    </tbody>
+</table>

@@ -1,0 +1,80 @@
+﻿@model CAD.Domain.Models.Aplicacao.EmpresaModel
+
+@{
+    ViewData["Title"] = "IndexSocio";
+}
+
+@{
+    var empresa = (CAD.Domain.Models.Aplicacao.EmpresaModel)ViewBag.Empresa;
+}
+
+@{
+    var eTipoEmpresa = (CAD.Domain.Enums.ETipoEmpresa)Model.Tipo;
+    if (eTipoEmpresa == CAD.Domain.Enums.ETipoEmpresa.Matriz)
+    {
+        @await Html.PartialAsync("~/Views/Partial/_Empresa.cshtml", empresa)
+    }
+    else
+    {
+        @await Html.PartialAsync("~/Views/Partial/_Filial.cshtml", empresa)  
+    }
+}
+
+<h1>Sócios</h1>
+<table class="table">
+@foreach (var item in Model.Socios) {
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => item.PessoaFisica.Pessoa.Nome)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => item.PessoaFisica.Pessoa.DataNascimento)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => item.PessoaFisica.Pessoa.NomeMae)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => item.PessoaFisica.Pessoa.Cpf)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+        break;
+}
+    <tbody>
+@foreach (var item in Model.Socios) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PessoaFisica.Pessoa.Nome)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PessoaFisica.Pessoa.DataNascimento)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PessoaFisica.Pessoa.NomeMae)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PessoaFisica.Pessoa.Cpf)
+            </td>
+            <td>
+                @Html.ActionLink("Editar", "Edit", new { id=item.PessoaFisica.PessoaId })
+            </td>
+        </tr>
+}    </tbody>
+</table>
+
+<div class="row">
+    <div class="col-md-4">
+        <form>
+            <div class="form-group-footer">
+                <a asp-controller="Empresas" asp-action="EditSocio"
+                   asp-route-empresaId="@empresa.EmpresaId" class="btn btn-primary">
+                        Associar socios a esta empresa
+                </a>                     
+            </div>
+        </form>
+    </div>
+</div>
+
+@Html.ActionLink("Voltar", "Edit", new { id=@empresa.EmpresaId })

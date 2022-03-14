@@ -1,0 +1,71 @@
+﻿@model CAD.Domain.Models.Aplicacao.EmpresaModel
+
+@{
+    ViewData["Title"] = "IndexFilial";
+}
+
+@{
+    var empresa = (CAD.Domain.Models.Aplicacao.EmpresaModel)ViewBag.Empresa;
+}
+
+@{
+    var eTipoEmpresa = (CAD.Domain.Enums.ETipoEmpresa)Model.Tipo;
+    if (eTipoEmpresa == CAD.Domain.Enums.ETipoEmpresa.Matriz)
+    {
+        @await Html.PartialAsync("~/Views/Partial/_Empresa.cshtml", empresa)
+    }
+    else
+    {
+        @await Html.PartialAsync("~/Views/Partial/_Filial.cshtml", empresa)  
+    }
+}
+
+<h1>Filiais</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Cgc)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Nome)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tipo)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Filiais) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Cgc)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Empresa.Nome)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Empresa.TipoEmpresa)
+            </td>
+            <td>
+                @Html.ActionLink("Editar", "Edit", new { id=item.EmpresaId })
+            </td>
+        </tr>
+}    </tbody>
+</table>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="EditFilial">
+            <div class="form-group">
+                <a asp-controller="Empresas" asp-action="EditFilial"
+                   asp-route-empresaId="@empresa.EmpresaId" class="btn btn-primary">
+                        Associar filiais a esta empresa
+                </a>                     
+            </div>
+        </form>
+    </div>
+</div>
+
+@Html.ActionLink("Voltar", "Edit", new { id=@empresa.EmpresaId })

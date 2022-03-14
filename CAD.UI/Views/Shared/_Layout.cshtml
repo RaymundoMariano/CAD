@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Cadasto de Pessoas Físicas e Jurídicas</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <div class="container">
+        <header>
+            @{await Html.RenderPartialAsync("_menu");}
+        </header>
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2021 - Cadasto de Pessoas Físicas e Jurídicas - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/jquery.inputmask.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+
+<script>
+    $(document).ready(function ()
+    {
+        $("#telefone").inputmask("mask", { "mask": "(99) 9999-99999" });
+        $("#cgc").inputmask("mask", { "mask": "99.999.999/9999-99" }, {reverse:true});
+        $("#cpf").inputmask("mask", { "mask": "999.999.999-99" }, {reverse:true});
+        $("#cep").inputmask("mask", { "mask": "99999-999" });
+        $("#nascimento").inputmask("mask", { "mask": "99/99/9999" });
+        $("#preco").inputmask("mask", { "mask": "999.999,99" }, { reverse: true });
+        $("#valor").inputmask("mask", { "mask": "#.##9,99" }, { reverse: true });
+        $("#ip").inputmask("mask", { "mask": "999.999.999.999" });
+    });
+</script>

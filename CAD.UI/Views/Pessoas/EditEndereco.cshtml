@@ -1,0 +1,17 @@
+﻿@model CAD.Domain.Models.Aplicacao.EnderecoPessoaModel
+
+@{
+    ViewData["Title"] = "EditEndereco";
+}
+
+@{
+    var pessoa = (CAD.Domain.Models.Aplicacao.PessoaModel)ViewBag.Pessoa;
+}
+
+@await Html.PartialAsync("~/Views/Partial/_Pessoa.cshtml", Model.Pessoa)
+@await Html.PartialAsync("~/Views/Partial/_IndexEndereco.cshtml", pessoa.EnderecoPessoas)
+@await Html.PartialAsync("~/Views/Partial/_EditEndereco.cshtml", Model.Endereco)
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
