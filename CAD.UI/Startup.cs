@@ -1,10 +1,9 @@
 using CAD.Client.Aplicacao;
 using CAD.Client.Autenticacao;
 using CAD.Client.Seguranca;
-using CAD.Domain.Contracts.Aplicacao;
-using CAD.Domain.Contracts.Autenticacao;
-using CAD.Domain.Contracts.Clients;
-using CAD.Domain.Contracts.Seguranca;
+using CAD.Domain.Contracts.Clients.Aplicacao;
+using CAD.Domain.Contracts.Clients.Autenticacao;
+using CAD.Domain.Contracts.Clients.Seguranca;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -30,17 +29,15 @@ namespace CAD.UI
         public void ConfigureServices(IServiceCollection services)
         {
             //Serviços da Aplicação
-            services.AddTransient<IPessoaAplication, PessoaAplication>();
-            services.AddTransient<IEmpresaAplication, EmpresaAplication>();
-            services.AddTransient<IEnderecoAplication, EnderecoAplication>();
+            services.AddTransient<IPessoaClient, PessoaClient>();
+            services.AddTransient<IEmpresaClient, EmpresaClient>();
+            services.AddTransient<IEnderecoClient, EnderecoClient>();
 
             //Serviços do Autenticador
-            services.AddTransient<IRegisterAuthentication, RegisterAuthentication>();
-            services.AddTransient<ILoginAuthentication, LoginAuthentication>();
-            services.AddTransient<ITrocaSenhaAuthentication, TrocaSenhaAuthentication>();
+            services.AddTransient<IAutenticacaoClient, AutenticacaoClient>();
 
             //Serviços do Seguranca
-            services.AddTransient<IUsuarioSecurity, UsuarioSecurity>();
+            services.AddTransient<ISegurancaClient, SegurancaClient>();
 
             //Serviço de cookie na aplicação
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

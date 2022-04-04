@@ -7,7 +7,6 @@
   <ItemGroup>
     <ProjectReference Include="..\CAD.Client\CAD.Client.csproj" />
     <ProjectReference Include="..\CAD.Domain\CAD.Domain.csproj" />
-    <ProjectReference Include="..\CAD.Service\CAD.Service.csproj" />
   </ItemGroup>
 
 </Project>

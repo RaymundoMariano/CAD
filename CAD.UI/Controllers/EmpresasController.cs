@@ -1,12 +1,12 @@
-﻿using CAD.Domain.Contracts.Clients;
+﻿using CAD.Client;
+using CAD.Domain;
+using CAD.Domain.Contracts.Clients.Aplicacao;
 using CAD.Domain.Enums;
 using CAD.Domain.Models.Aplicacao;
-using CAD.Domain.Models.Response;
-using CAD.Service;
-using CAD.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -24,8 +24,8 @@ namespace CAD.UI.Controllers
         }
         private string Token { get { return User.FindFirstValue("Token"); } }
 
-        private readonly IEmpresaAplication _empresaClient;
-        public EmpresasController(IEmpresaAplication empresaClient)
+        private readonly IEmpresaClient _empresaClient;
+        public EmpresasController(IEmpresaClient empresaClient)
         {
             _empresaClient = empresaClient;
         }
@@ -37,21 +37,11 @@ namespace CAD.UI.Controllers
             try
             {
                 var mensagem = Seguranca.TemPermissao();
-                if (mensagem != null) return Error(ETipoErro.Sistema, mensagem);
+                if (mensagem != null) return Error(mensagem);
 
-                var result = await _empresaClient.ObterAsync(Token);
-                if (result.Succeeded)
-                {
-                    var empresas = JsonConvert.DeserializeObject<List<EmpresaModel>>(result.ObjectRetorno.ToString());
-                    return View(empresas);
-                }
-                else
-                    return Error(result);
+                return View(await _empresaClient.ObterAsync(Token));
             }
-            catch
-            {
-                return Error(ETipoErro.Fatal, null);
-            }
+            catch (Exception) { return Error(null); }
         }
         #endregion
 
@@ -65,10 +55,7 @@ namespace CAD.UI.Controllers
                 ViewBag.Tipos = EnumService<ETipoEmpresa>.GetOptions<ETipoEmpresa>();
                 return await GetEmpresa(id);
             }
-            catch
-            {
-                return Error(ETipoErro.Fatal, null);
-            }
+            catch { return Error(null); }
         }
         #endregion
 
@@ -87,23 +74,23 @@ namespace CAD.UI.Controllers
         {
             try
             {
-                var mensagem = Seguranca.TemPermissao("Empresa", "Incluir");
-                if (mensagem != null) return Error(ETipoErro.Sistema, mensagem);
-
-                var result = await _empresaClient.InsereAsync(empresa, Token);
-                if (result.Succeeded) return RedirectToAction(nameof(Index));
-
-                if ((ETipoErro)result.ObjectResult == ETipoErro.Sistema)
+                if (ModelState.IsValid)
                 {
-                    foreach (var erro in result.Errors) { ModelState.AddModelError("Cgc", erro); }
-                    return View(empresa);
+                    var mensagem = Seguranca.TemPermissao("Empresa", "Incluir");
+                    if (mensagem != null) return Error(mensagem);
+
+                    await _empresaClient.InsereAsync(empresa, Token);
+
+                    return RedirectToAction(nameof(Index));
                 }
-                return Error(result);
+                return View(empresa);
             }
-            catch
+            catch (ClientException ex)
             {
-                return Error(ETipoErro.Fatal, null);
+                ModelState.AddModelError("Nome", ex.Message);
+                return View(empresa);
             }
+            catch (Exception) { return Error(null); }
         }
         #endregion
 
@@ -121,23 +108,23 @@ namespace CAD.UI.Controllers
         {
             try
             {
-                var mensagem = Seguranca.TemPermissao("Empresa", "Alterar");
-                if (mensagem != null) return Error(ETipoErro.Sistema, mensagem);
-
-                var result = await _empresaClient.UpdateAsync(id, empresa, Token);
-                if (result.Succeeded) return RedirectToAction(nameof(Index));
-
-                if ((ETipoErro)result.ObjectResult == ETipoErro.Sistema)
+                if (ModelState.IsValid)
                 {
-                    foreach (var erro in result.Errors) { ModelState.AddModelError("Cgc", erro); }
-                    return View(empresa);
+                    var mensagem = Seguranca.TemPermissao("Empresa", "Alterar");
+                    if (mensagem != null) return Error(mensagem);
+
+                    await _empresaClient.UpdateAsync(id, empresa, Token);
+
+                    return RedirectToAction(nameof(Index));
                 }
-                return Error(result);
+                return View(empresa);
             }
-            catch
+            catch (ClientException ex)
             {
-                return Error(ETipoErro.Fatal, null);
+                ModelState.AddModelError("Nome", ex.Message);
+                return View(empresa);
             }
+            catch (Exception) { return Error(null); }
         }
         #endregion
 
@@ -156,17 +143,15 @@ namespace CAD.UI.Controllers
             try
             {
                 var mensagem = Seguranca.TemPermissao("Empresa", "Excluir");
-                if (mensagem != null) return Error(ETipoErro.Sistema, mensagem);
+                if (mensagem != null) return Error(mensagem);
 
-                var result = await _empresaClient.RemoveAsync(id, Token);
-                if (result.Succeeded) return RedirectToAction(nameof(Index));
-                else
-                    return Error(result);
+                await _empresaClient.RemoveAsync(id, Token);
+
+                return RedirectToAction(nameof(Index));
             }
-            catch
-            {
-                return Error(ETipoErro.Fatal, null);
-            }
+            catch (ClientException ex) { return Error(ex.Message); }
+            catch (Exception) { return Error(null); }
+
         }
         #endregion
 
@@ -182,10 +167,7 @@ namespace CAD.UI.Controllers
 
                 return await GetEmpresa(id);
             }
-            catch
-            {
-                return Error(ETipoErro.Fatal, null);
-            }
+            catch { return Error(null); }
         }
 
         // GET: EmpresasController/EditEndereco
@@ -197,17 +179,13 @@ namespace CAD.UI.Controllers
                 enderecoModel.Evento = (int)eEvento;
 
                 var mensagem = Seguranca.TemPermissao("Empresa", "Associar Endereco");
-                if (mensagem != null) return Error(ETipoErro.Sistema, mensagem);
+                if (mensagem != null) return Error(mensagem);
 
-                var result = await _empresaClient.ManterEnderecoAsync(id, enderecoModel, Token);
-                if (result.Succeeded) return RedirectToAction("EditEndereco", new { Id = id });
-                else
-                    return Error(result);
+                await _empresaClient.ManterEnderecoAsync(id, enderecoModel, Token);
+                
+                return RedirectToAction("EditEndereco", new { Id = id });
             }
-            catch
-            {
-                return Error(ETipoErro.Fatal, null);
-            }
+            catch (Exception) { return Error(null); }
         }
         #endregion
 
@@ -227,39 +205,28 @@ namespace CAD.UI.Controllers
         {
             try
             {
-                var result = await _empresaClient.ObterAsync(empresaId, Token);
-                if (result.Succeeded)
-                {
-                    ViewBag.Empresa = JsonConvert.DeserializeObject<EmpresaModel>(result.ObjectRetorno.ToString());
-                }
-                else return Error(result);
-
-                result = await _empresaClient.ObterFiliaisAsync(empresaId, Token);
-                if (result.Succeeded)
-                {
-                    var filiais = JsonConvert.DeserializeObject<List<EmpresaModel>>(result.ObjectRetorno.ToString());
-                    return View(filiais);
-                }
-                else return Error(result);
+                ViewBag.Empresa = await _empresaClient.ObterAsync(empresaId, Token);
+                
+                return View(await _empresaClient.ObterFiliaisAsync(empresaId, Token));
             }
-            catch { return Error(ETipoErro.Fatal, null); }
+            catch (Exception) { return Error(null); }
         }
-        
+
         // GET: EmpresasController/EditFilial
         [HttpPost]
-        public async Task<ActionResult> EditFilial(int empresaId, List<EmpresaModel> empresasModel)
+        public async Task<ActionResult> EditFilial(int empresaId, List<FilialModel> filiaisModel)
         {
             try
             {
                 var mensagem = Seguranca.TemPermissao("Empresa", "Associar Filial");
-                if (mensagem != null) return Error(ETipoErro.Sistema, mensagem);
+                if (mensagem != null) return Error(mensagem);
 
-                var result = await _empresaClient.ManterFiliaisAsync(empresaId, empresasModel, Token);
-                if (result.Succeeded) return RedirectToAction("EditFilial", new { Id = empresaId });
-                else
-                    return Error(result);
+                await _empresaClient.ManterFiliaisAsync(empresaId, filiaisModel, Token);
+                
+                return RedirectToAction("IndexFilial", new { empresaId = empresaId });
             }
-            catch { return Error(ETipoErro.Fatal, null); }
+            catch (ClientException ex) { return Error(ex.Message); }
+            catch (Exception) { return Error(null); }
         }
         #endregion
 
@@ -279,22 +246,11 @@ namespace CAD.UI.Controllers
         {
             try
             {
-                var result = await _empresaClient.ObterAsync(empresaId, Token);
-                if (result.Succeeded)
-                {
-                    ViewBag.Empresa = JsonConvert.DeserializeObject<EmpresaModel>(result.ObjectRetorno.ToString());
-                }
-                else return Error(result);
+                ViewBag.Empresa = await _empresaClient.ObterAsync(empresaId, Token);
 
-                result = await _empresaClient.ObterSociosAsync(empresaId, Token);
-                if (result.Succeeded)
-                {
-                    var socios = JsonConvert.DeserializeObject<List<PessoaModel>>(result.ObjectRetorno.ToString());
-                    return View(socios);
-                }
-                else return Error(result);
+                return View(await _empresaClient.ObterSociosAsync(empresaId, Token));
             }
-            catch { return Error(ETipoErro.Fatal, null); }
+            catch (Exception) { return Error(null); }
         }
 
         // GET: EmpresasController/EditSocio
@@ -304,14 +260,14 @@ namespace CAD.UI.Controllers
             try
             {
                 var mensagem = Seguranca.TemPermissao("Empresa", "Associar Socio");
-                if (mensagem != null) return Error(ETipoErro.Sistema, mensagem);
+                if (mensagem != null) return Error(mensagem);
 
-                var result = await _empresaClient.ManterSociosAsync(empresaId, pessoasModel, Token);
-                if (result.Succeeded) return RedirectToAction("EditSocio", new { Id = empresaId });
-                else
-                    return Error(result);
+                await _empresaClient.ManterSociosAsync(empresaId, pessoasModel, Token);
+                
+                return RedirectToAction("IndexSocio", new { empresaId = empresaId });
             }
-            catch { return Error(ETipoErro.Fatal, null); }
+            catch (ClientException ex) { return Error(ex.Message); }
+            catch (Exception) { return Error(null); }
         }
         #endregion
 
@@ -320,41 +276,27 @@ namespace CAD.UI.Controllers
         {
             try
             {
-                var result = await _empresaClient.ObterAsync(empresaId, Token);
-                if (result.Succeeded)
-                {
-                    var empresa = JsonConvert.DeserializeObject<EmpresaModel>(result.ObjectRetorno.ToString());
-                    ViewBag.Empresa = empresa;
-                    return View(empresa);
-                }
-                else return Error(result);
+                var empresa = await _empresaClient.ObterAsync(empresaId, Token);
+                
+                ViewBag.Empresa = empresa;
+
+                return View(empresa);
             }
-            catch { return Error(ETipoErro.Fatal, null); }
+            catch (Exception) { return Error(null); }
         }
         #endregion
 
         #region Error
-        private ActionResult Error(ETipoErro eTipoErro, string mensagem)
+        private ActionResult Error(string mensagem)
         {
-            return Error(new ResultModel()
-            {
-                ObjectResult = (eTipoErro == ETipoErro.Fatal)
-                    ? (int)EObjectResult.ErroFatal
-                    : (int)eTipoErro,
-                Errors = new List<string>() { mensagem }
-            });
-        }
-
-        private ActionResult Error(ResultModel result)
-        {
-            if (result.ObjectResult == (int)EObjectResult.ErroFatal)
+            if (mensagem == null)
             {
                 ViewBag.ErrorTitle = null;
             }
             else
             {
-                ViewBag.ErrorTitle = "Empresa";
-                ViewBag.ErrorMessage = result.Errors[0];
+                ViewBag.ErrorTitle = "Evento";
+                ViewBag.ErrorMessage = mensagem;
             }
             return View("Error");
         }

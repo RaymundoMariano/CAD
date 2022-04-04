@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 
-namespace CAD.Services
+namespace CAD.Domain
 {
     public static class EnumService<T>
     {

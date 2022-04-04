@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CAD.Domain.Models.Aplicacao.EmpresaModel>
+﻿@model List<CAD.Domain.Models.Aplicacao.FilialModel>
 
 @{
     ViewData["Title"] = "EditFilial";
@@ -13,48 +13,29 @@
 <h1>Filiais</h1>
 <form method="post">
     <div class="form-group">
+        <div class="form-group-header">
+            <h4>Associar filiais a esta empresa</h4>
+        </div>
         <div class="form-group-body">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Cgc)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Nome)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Tipo)
-                        </th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td>
-                                <input asp-for="@item.Selected" class="form-check-input" />
-                                @Html.DisplayFor(modelItem => item.Cgc)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Nome)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.TipoEmpresa)
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                <div class="form-check m-1">
+                    <input type="hidden" asp-for="@Model[i].EmpresaId" />
+                    <input type="hidden" asp-for="@Model[i].Cgc" />
+                    <input asp-for="@Model[i].Selected" class="form-check-input" />
+                    <label class="form-check-label" asp-for="@Model[i].Selected">
+                        @Model[i].Cgc   @Model[i].Nome  @Model[i].TipoEmpresa
+                    </label>
+                </div>
+            }
         </div>
         <div class="form-group-footer">
-            @if (Model != null)
+            @if (Model.Count() != 0)
             {
                 <input type="submit" value="Atualizar" class="btn btn-primary" style="width:auto" />
             }
             <a asp-action="IndexFilial" asp-route-empresaId="@empresa.EmpresaId"
-               class="btn btn-primary" style="width:auto">Cancelar</a>
+             class="btn btn-primary" style="width:auto">Cancelar</a>
         </div>
     </div>
 </form>

@@ -1,13 +1,12 @@
-﻿using CAD.Domain.Contracts.Aplicacao;
+﻿using CAD.Client;
+using CAD.Domain;
+using CAD.Domain.Contracts.Clients.Aplicacao;
 using CAD.Domain.Enums;
 using CAD.Domain.Models.Aplicacao;
-using CAD.Domain.Models.Response;
-using CAD.Service;
-using CAD.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System.Collections.Generic;
+using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -24,9 +23,9 @@ namespace CAD.UI.Controllers
         }
         private string Token { get { return User.FindFirstValue("Token"); } }
 
-        private readonly IPessoaAplication _pessoaClient;
-        private readonly IEnderecoAplication _enderecoClient;
-        public PessoasController(IPessoaAplication pessoaClient, IEnderecoAplication enderecoClient)
+        private readonly IPessoaClient _pessoaClient;
+        private readonly IEnderecoClient _enderecoClient;
+        public PessoasController(IPessoaClient pessoaClient, IEnderecoClient enderecoClient)
         {
             _pessoaClient = pessoaClient;
             _enderecoClient = enderecoClient;
@@ -39,17 +38,11 @@ namespace CAD.UI.Controllers
             try
             {
                 var mensagem = Seguranca.TemPermissao();
-                if (mensagem != null) return Error(ETipoErro.Sistema, mensagem);
+                if (mensagem != null) return Error(mensagem);
 
-                var result = await _pessoaClient.ObterAsync(Token);
-                if (result.Succeeded)
-                {
-                    var pessoas = JsonConvert.DeserializeObject<List<PessoaModel>>(result.ObjectRetorno.ToString());
-                    return View(pessoas);
-                }
-                else return Error(result);
+                return View(await _pessoaClient.ObterAsync(Token));
             }
-            catch { return Error(ETipoErro.Fatal, null); }
+            catch (Exception) { return Error(null); }
         }
         #endregion
 
@@ -60,16 +53,9 @@ namespace CAD.UI.Controllers
         {
             try
             {
-                var result = await _pessoaClient.ObterAsync(id, Token);
-                if (result.Succeeded)
-                {
-                    var pessoa = JsonConvert.DeserializeObject<PessoaModel>(result.ObjectRetorno.ToString());
-                    return View(pessoa);
-                }
-                else
-                    return Error(result);
+                return View(await _pessoaClient.ObterAsync(id, Token));
             }
-            catch { return Error(ETipoErro.Fatal, null); }
+            catch (Exception) { return Error(null); }
         }
         #endregion
 
@@ -87,20 +73,23 @@ namespace CAD.UI.Controllers
         {
             try
             {
-                var mensagem = Seguranca.TemPermissao("Pessoa", "Incluir");
-                if (mensagem != null) return Error(ETipoErro.Sistema, mensagem);
-
-                var result = await _pessoaClient.InsereAsync(pessoa, Token);
-                if (result.Succeeded) return RedirectToAction(nameof(Index));
-
-                if ((ETipoErro)result.ObjectResult == ETipoErro.Sistema)
+                if (ModelState.IsValid)
                 {
-                    foreach (var erro in result.Errors) { ModelState.AddModelError("Nome", erro); }
-                    return View(pessoa);
+                    var mensagem = Seguranca.TemPermissao("Pessoa", "Incluir");
+                    if (mensagem != null) return Error(mensagem);
+
+                    await _pessoaClient.InsereAsync(pessoa, Token);
+
+                    return RedirectToAction(nameof(Index));
                 }
-                return Error(result);
+                return View(pessoa);
             }
-            catch { return Error(ETipoErro.Fatal, null); }
+            catch (ClientException ex)
+            {
+                ModelState.AddModelError("Nome", ex.Message);
+                return View(pessoa);
+            }
+            catch (Exception) { return Error(null); }
         }
         #endregion
 
@@ -118,20 +107,23 @@ namespace CAD.UI.Controllers
         {
             try
             {
-                var mensagem = Seguranca.TemPermissao("Pessoa", "Alterar");
-                if (mensagem != null) return Error(ETipoErro.Sistema, mensagem);
-
-                var result = await _pessoaClient.UpdateAsync(id, pessoa, Token);
-                if (result.Succeeded) return RedirectToAction(nameof(Index));
-
-                if ((ETipoErro)result.ObjectResult == ETipoErro.Sistema)
+                if (ModelState.IsValid)
                 {
-                    foreach (var erro in result.Errors) { ModelState.AddModelError("Nome", erro); }
-                    return View(pessoa);
+                    var mensagem = Seguranca.TemPermissao("Pessoa", "Alterar");
+                    if (mensagem != null) return Error(mensagem);
+
+                    await _pessoaClient.UpdateAsync(id, pessoa, Token);
+
+                    return RedirectToAction(nameof(Index));
                 }
-                return Error(result);
+                return View(pessoa);
             }
-            catch { return Error(ETipoErro.Fatal, null); }
+            catch (ClientException ex)
+            {
+                ModelState.AddModelError("Nome", ex.Message);
+                return View(pessoa);
+            }
+            catch (Exception) { return Error(null); }
         }
         #endregion
 
@@ -150,14 +142,14 @@ namespace CAD.UI.Controllers
             try
             {
                 var mensagem = Seguranca.TemPermissao("Pessoa", "Excluir");
-                if (mensagem != null) return Error(ETipoErro.Sistema, mensagem);
+                if (mensagem != null) return Error(mensagem);
 
-                var result = await _pessoaClient.RemoveAsync(id, Token);
-                if (result.Succeeded) return RedirectToAction(nameof(Index));
-                else
-                    return Error(result);
+                await _pessoaClient.RemoveAsync(id, Token);
+                
+                return RedirectToAction(nameof(Index));
             }
-            catch { return Error(ETipoErro.Fatal, null); }
+            catch (ClientException ex) { return Error(ex.Message); }
+            catch (Exception) { return Error(null); }
         }
         #endregion
 
@@ -169,15 +161,9 @@ namespace CAD.UI.Controllers
             ViewBag.Id = id;
             try
             {
-                var result = await _pessoaClient.ObterAsync(id, Token);
-                if (result.Succeeded)
-                {
-                    var pessoa = JsonConvert.DeserializeObject<PessoaModel>(result.ObjectRetorno.ToString());
-                    return View(pessoa);
-                }
-                else return Error(result);
+                return View(await _pessoaClient.ObterAsync(id, Token));
             }
-            catch { return Error(ETipoErro.Fatal, null); }
+            catch (Exception) { return Error(null); }
         }
         #endregion
 
@@ -193,29 +179,22 @@ namespace CAD.UI.Controllers
 
                 var ep = new EnderecoPessoaModel();
 
-                var result = await _pessoaClient.ObterAsync(pessoaId, Token);
-                if (result.Succeeded)
+                var pessoa = await _pessoaClient.ObterAsync(pessoaId, Token);
+
+                ep = (new EnderecoPessoaModel()
                 {
-                    ep = (new EnderecoPessoaModel()
-                    {
-                        Pessoa = JsonConvert.DeserializeObject<PessoaModel>(result.ObjectRetorno.ToString()),
-                        Endereco = null
-                    });
-                    ViewBag.Pessoa = ep.Pessoa;
-                }
-                else return Error(result);
+                    Pessoa = pessoa,
+                    Endereco = null
+                });
+                ViewBag.Pessoa = ep.Pessoa;
 
                 if (enderecoId == 0) return View(ep);
 
-                result = await _enderecoClient.ObterAsync(enderecoId, Token);
-                if (result.Succeeded)
-                {
-                    ep.Endereco = JsonConvert.DeserializeObject<EnderecoModel>(result.ObjectRetorno.ToString());
-                    return View(ep);
-                }
-                else return Error(result);
+                ep.Endereco = await _enderecoClient.ObterAsync(enderecoId, Token);
+                
+                return View(ep);
             }
-            catch { return Error(ETipoErro.Fatal, null); }
+            catch (Exception) { return Error(null); }
         }
 
         // GET: EmpresasController/EditEndereco
@@ -227,39 +206,27 @@ namespace CAD.UI.Controllers
                 enderecoModel.Evento = (int)eEvento;
 
                 var mensagem = Seguranca.TemPermissao("Pessoa", "Associar Endereco");
-                if (mensagem != null) return Error(ETipoErro.Sistema, mensagem);
+                if (mensagem != null) return Error(mensagem);
 
-                var result = await _pessoaClient.ManterEnderecoAsync(id, enderecoModel, Token);
-                if (result.Succeeded) return RedirectToAction("IndexEndereco", new { Id = id });
-                else
-                    return Error(result);
+                await _pessoaClient.ManterEnderecoAsync(id, enderecoModel, Token);
+                
+                return RedirectToAction("IndexEndereco", new { Id = id });
             }
-            catch { return Error(ETipoErro.Fatal, null); }
+            catch (Exception) { return Error(null); }
         }
         #endregion
 
         #region Error
-        private ActionResult Error(ETipoErro eTipoErro, string mensagem)
+        private ActionResult Error(string mensagem)
         {
-            return Error(new ResultModel()
-            {
-                ObjectResult = (eTipoErro == ETipoErro.Fatal)
-                    ? (int)EObjectResult.ErroFatal
-                    : (int)eTipoErro,
-                Errors = new List<string>() { mensagem }
-            });
-        }
-
-        private ActionResult Error(ResultModel result)
-        {
-            if (result.ObjectResult == (int)EObjectResult.ErroFatal)
+            if (mensagem == null)
             {
                 ViewBag.ErrorTitle = null;
             }
             else
             {
-                ViewBag.ErrorTitle = "Pessoa";
-                ViewBag.ErrorMessage = result.Errors[0];
+                ViewBag.ErrorTitle = "Evento";
+                ViewBag.ErrorMessage = mensagem;
             }
             return View("Error");
         }

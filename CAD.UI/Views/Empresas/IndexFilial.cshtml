@@ -43,13 +43,13 @@
                 @Html.DisplayFor(modelItem => item.Cgc)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Empresa.Nome)
+                @Html.DisplayFor(modelItem => item.Nome)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Empresa.TipoEmpresa)
+                @Html.DisplayFor(modelItem => item.TipoEmpresa)
             </td>
             <td>
-                @Html.ActionLink("Editar", "Edit", new { id=item.EmpresaId })
+                @Html.ActionLink("Editar", "Edit", new { id=item.EmpresaIdFilial })
             </td>
         </tr>
 }    </tbody>

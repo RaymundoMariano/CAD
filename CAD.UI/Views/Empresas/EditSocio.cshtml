@@ -23,53 +23,27 @@
 <h1>Sócios</h1>
 <form method="post">
     <div class="form-group">
+        <div class="form-group-header">
+            <h4>Associar pessoas a esta empresa</h4>
+        </div>
         <div class="form-group-body">
-            <table class="table">
-                <thead>
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <th>
-                                @Html.DisplayNameFor(model => item.Nome)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => item.DataNascimento)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => item.NomeMae)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => item.Cpf)
-                            </th>
-                            <th></th>
-                        </tr>
-                        break;
-                    }
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td>
-                                <input asp-for="@item.Selected" class="form-check-input" />
-                                @Html.DisplayFor(modelItem => item.Nome)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.DataNascimento)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.NomeMae)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Cpf)
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                <div class="form-check m-1">
+                    <input type="hidden" asp-for="@Model[i].PessoaId" />
+                    <input type="hidden" asp-for="@Model[i].Nome" />
+                    <input type="hidden" asp-for="@Model[i].DataNascimento" />
+                    <input type="hidden" asp-for="@Model[i].NomeMae" />
+                    <input type="hidden" asp-for="@Model[i].Cpf" />
+                    <input asp-for="@Model[i].Selected" class="form-check-input" />
+                    <label class="form-check-label" asp-for="@Model[i].Selected">
+                        @Model[i].Nome
+                    </label>
+                </div>
+            }
         </div>
         <div class="form-group-footer">
-            @if (Model != null)
+            @if (Model.Count() != 0)
             {
                 <input type="submit" value="Atualizar" class="btn btn-primary" style="width:auto" />
             }

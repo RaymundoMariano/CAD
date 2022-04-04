@@ -58,7 +58,7 @@
                 @Html.DisplayFor(modelItem => item.PessoaFisica.Pessoa.Cpf)
             </td>
             <td>
-                @Html.ActionLink("Editar", "Edit", new { id=item.PessoaFisica.PessoaId })
+                @Html.ActionLink("Editar", "Edit", "Pessoas", new { id=item.PessoaFisica.PessoaId })
             </td>
         </tr>
 }    </tbody>
@@ -70,7 +70,7 @@
             <div class="form-group-footer">
                 <a asp-controller="Empresas" asp-action="EditSocio"
                    asp-route-empresaId="@empresa.EmpresaId" class="btn btn-primary">
-                        Associar socios a esta empresa
+                        Associar pessoas a esta empresa
                 </a>                     
             </div>
         </form>

@@ -6,17 +6,18 @@ using System.Net.Http.Headers;
 
 namespace CAD.Client
 {
-    public abstract class ClientBase
+    public abstract class BaseClient
     {
         protected readonly string URI;
         protected HttpClient Client;
 
-        protected ClientBase(string uri)
+        protected BaseClient(string uri)
         {
             URI = uri;
             NovaRota("", null);
         }
 
+        #region NovaRota
         protected void NovaRota(string complememto, string token)
         {
             Client = new HttpClient();
@@ -31,12 +32,19 @@ namespace CAD.Client
                                 new AuthenticationHeaderValue("Bearer", token);
             }
         }
+        #endregion
 
-        #region Deserialize
-        protected ResultModel Deserialize(HttpResponseMessage httpResponse)
+        #region Response
+        protected ResponseModel Response(HttpResponseMessage httpResponse)
         {
             var conteudo = httpResponse.Content.ReadAsStringAsync().Result;
-            return JsonConvert.DeserializeObject<ResultModel>(conteudo);
+            var response = JsonConvert.DeserializeObject<ResponseModel>(conteudo);
+
+            if (!response.Succeeded) throw new Exception();
+
+            if (response.Errors.Count == 1) throw new ClientException(response.Errors[0]);
+
+            return response;
         }
         #endregion
     }
