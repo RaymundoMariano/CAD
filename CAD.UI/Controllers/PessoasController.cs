@@ -1,6 +1,6 @@
 ﻿using CAD.Client;
 using CAD.Domain;
-using CAD.Domain.Contracts.Clients.Aplicacao;
+using CAD.Domain.Contracts.UnitOfWorks;
 using CAD.Domain.Enums;
 using CAD.Domain.Models.Aplicacao;
 using Microsoft.AspNetCore.Authorization;
@@ -23,12 +23,10 @@ namespace CAD.UI.Controllers
         }
         private string Token { get { return User.FindFirstValue("Token"); } }
 
-        private readonly IPessoaClient _pessoaClient;
-        private readonly IEnderecoClient _enderecoClient;
-        public PessoasController(IPessoaClient pessoaClient, IEnderecoClient enderecoClient)
+        private readonly IUnitOfWork _unitOfWork;
+        public PessoasController(IUnitOfWork unitOfWork)
         {
-            _pessoaClient = pessoaClient;
-            _enderecoClient = enderecoClient;
+            _unitOfWork = unitOfWork;
         }
 
         #region Index
@@ -40,7 +38,7 @@ namespace CAD.UI.Controllers
                 var mensagem = Seguranca.TemPermissao();
                 if (mensagem != null) return Error(mensagem);
 
-                return View(await _pessoaClient.ObterAsync(Token));
+                return View(await _unitOfWork.Pessoas.ObterAsync(Token));
             }
             catch (Exception) { return Error(null); }
         }
@@ -53,7 +51,7 @@ namespace CAD.UI.Controllers
         {
             try
             {
-                return View(await _pessoaClient.ObterAsync(id, Token));
+                return View(await _unitOfWork.Pessoas.ObterAsync(id, Token));
             }
             catch (Exception) { return Error(null); }
         }
@@ -78,7 +76,7 @@ namespace CAD.UI.Controllers
                     var mensagem = Seguranca.TemPermissao("Pessoa", "Incluir");
                     if (mensagem != null) return Error(mensagem);
 
-                    await _pessoaClient.InsereAsync(pessoa, Token);
+                    await _unitOfWork.Pessoas.InsereAsync(pessoa, Token);
 
                     return RedirectToAction(nameof(Index));
                 }
@@ -112,7 +110,7 @@ namespace CAD.UI.Controllers
                     var mensagem = Seguranca.TemPermissao("Pessoa", "Alterar");
                     if (mensagem != null) return Error(mensagem);
 
-                    await _pessoaClient.UpdateAsync(id, pessoa, Token);
+                    await _unitOfWork.Pessoas.UpdateAsync(id, pessoa, Token);
 
                     return RedirectToAction(nameof(Index));
                 }
@@ -144,7 +142,7 @@ namespace CAD.UI.Controllers
                 var mensagem = Seguranca.TemPermissao("Pessoa", "Excluir");
                 if (mensagem != null) return Error(mensagem);
 
-                await _pessoaClient.RemoveAsync(id, Token);
+                await _unitOfWork.Pessoas.RemoveAsync(id, Token);
                 
                 return RedirectToAction(nameof(Index));
             }
@@ -161,7 +159,7 @@ namespace CAD.UI.Controllers
             ViewBag.Id = id;
             try
             {
-                return View(await _pessoaClient.ObterAsync(id, Token));
+                return View(await _unitOfWork.Pessoas.ObterAsync(id, Token));
             }
             catch (Exception) { return Error(null); }
         }
@@ -179,7 +177,7 @@ namespace CAD.UI.Controllers
 
                 var ep = new EnderecoPessoaModel();
 
-                var pessoa = await _pessoaClient.ObterAsync(pessoaId, Token);
+                var pessoa = await _unitOfWork.Pessoas.ObterAsync(pessoaId, Token);
 
                 ep = (new EnderecoPessoaModel()
                 {
@@ -190,8 +188,14 @@ namespace CAD.UI.Controllers
 
                 if (enderecoId == 0) return View(ep);
 
-                ep.Endereco = await _enderecoClient.ObterAsync(enderecoId, Token);
-                
+                foreach(var end in pessoa.EnderecoPessoas)
+                {
+                    if (end.EnderecoId == enderecoId)
+                    {
+                        ep.Endereco = end.Endereco;
+                        break;
+                    }
+                }
                 return View(ep);
             }
             catch (Exception) { return Error(null); }
@@ -208,7 +212,7 @@ namespace CAD.UI.Controllers
                 var mensagem = Seguranca.TemPermissao("Pessoa", "Associar Endereco");
                 if (mensagem != null) return Error(mensagem);
 
-                await _pessoaClient.ManterEnderecoAsync(id, enderecoModel, Token);
+                await _unitOfWork.Pessoas.ManterEnderecoAsync(id, enderecoModel, Token);
                 
                 return RedirectToAction("IndexEndereco", new { Id = id });
             }

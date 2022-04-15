@@ -1,6 +1,6 @@
 ﻿using CAD.Client;
 using CAD.Domain;
-using CAD.Domain.Contracts.Clients.Aplicacao;
+using CAD.Domain.Contracts.UnitOfWorks;
 using CAD.Domain.Enums;
 using CAD.Domain.Models.Aplicacao;
 using Microsoft.AspNetCore.Authorization;
@@ -24,10 +24,10 @@ namespace CAD.UI.Controllers
         }
         private string Token { get { return User.FindFirstValue("Token"); } }
 
-        private readonly IEmpresaClient _empresaClient;
-        public EmpresasController(IEmpresaClient empresaClient)
+        private readonly IUnitOfWork _unitOfWork;
+        public EmpresasController(IUnitOfWork unitOfWork)
         {
-            _empresaClient = empresaClient;
+            _unitOfWork = unitOfWork;
         }
 
         #region Index
@@ -39,7 +39,7 @@ namespace CAD.UI.Controllers
                 var mensagem = Seguranca.TemPermissao();
                 if (mensagem != null) return Error(mensagem);
 
-                return View(await _empresaClient.ObterAsync(Token));
+                return View(await _unitOfWork.Empresas.ObterAsync(Token));
             }
             catch (Exception) { return Error(null); }
         }
@@ -79,7 +79,7 @@ namespace CAD.UI.Controllers
                     var mensagem = Seguranca.TemPermissao("Empresa", "Incluir");
                     if (mensagem != null) return Error(mensagem);
 
-                    await _empresaClient.InsereAsync(empresa, Token);
+                    await _unitOfWork.Empresas.InsereAsync(empresa, Token);
 
                     return RedirectToAction(nameof(Index));
                 }
@@ -113,7 +113,7 @@ namespace CAD.UI.Controllers
                     var mensagem = Seguranca.TemPermissao("Empresa", "Alterar");
                     if (mensagem != null) return Error(mensagem);
 
-                    await _empresaClient.UpdateAsync(id, empresa, Token);
+                    await _unitOfWork.Empresas.UpdateAsync(id, empresa, Token);
 
                     return RedirectToAction(nameof(Index));
                 }
@@ -145,7 +145,7 @@ namespace CAD.UI.Controllers
                 var mensagem = Seguranca.TemPermissao("Empresa", "Excluir");
                 if (mensagem != null) return Error(mensagem);
 
-                await _empresaClient.RemoveAsync(id, Token);
+                await _unitOfWork.Empresas.RemoveAsync(id, Token);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -181,7 +181,7 @@ namespace CAD.UI.Controllers
                 var mensagem = Seguranca.TemPermissao("Empresa", "Associar Endereco");
                 if (mensagem != null) return Error(mensagem);
 
-                await _empresaClient.ManterEnderecoAsync(id, enderecoModel, Token);
+                await _unitOfWork.Empresas.ManterEnderecoAsync(id, enderecoModel, Token);
                 
                 return RedirectToAction("EditEndereco", new { Id = id });
             }
@@ -205,9 +205,9 @@ namespace CAD.UI.Controllers
         {
             try
             {
-                ViewBag.Empresa = await _empresaClient.ObterAsync(empresaId, Token);
+                ViewBag.Empresa = await _unitOfWork.Empresas.ObterAsync(empresaId, Token);
                 
-                return View(await _empresaClient.ObterFiliaisAsync(empresaId, Token));
+                return View(await _unitOfWork.Empresas.ObterFiliaisAsync(empresaId, Token));
             }
             catch (Exception) { return Error(null); }
         }
@@ -221,7 +221,7 @@ namespace CAD.UI.Controllers
                 var mensagem = Seguranca.TemPermissao("Empresa", "Associar Filial");
                 if (mensagem != null) return Error(mensagem);
 
-                await _empresaClient.ManterFiliaisAsync(empresaId, filiaisModel, Token);
+                await _unitOfWork.Empresas.ManterFiliaisAsync(empresaId, filiaisModel, Token);
                 
                 return RedirectToAction("IndexFilial", new { empresaId = empresaId });
             }
@@ -246,9 +246,9 @@ namespace CAD.UI.Controllers
         {
             try
             {
-                ViewBag.Empresa = await _empresaClient.ObterAsync(empresaId, Token);
+                ViewBag.Empresa = await _unitOfWork.Empresas.ObterAsync(empresaId, Token);
 
-                return View(await _empresaClient.ObterSociosAsync(empresaId, Token));
+                return View(await _unitOfWork.Empresas.ObterSociosAsync(empresaId, Token));
             }
             catch (Exception) { return Error(null); }
         }
@@ -262,7 +262,7 @@ namespace CAD.UI.Controllers
                 var mensagem = Seguranca.TemPermissao("Empresa", "Associar Socio");
                 if (mensagem != null) return Error(mensagem);
 
-                await _empresaClient.ManterSociosAsync(empresaId, pessoasModel, Token);
+                await _unitOfWork.Empresas.ManterSociosAsync(empresaId, pessoasModel, Token);
                 
                 return RedirectToAction("IndexSocio", new { empresaId = empresaId });
             }
@@ -276,7 +276,7 @@ namespace CAD.UI.Controllers
         {
             try
             {
-                var empresa = await _empresaClient.ObterAsync(empresaId, Token);
+                var empresa = await _unitOfWork.Empresas.ObterAsync(empresaId, Token);
                 
                 ViewBag.Empresa = empresa;
 

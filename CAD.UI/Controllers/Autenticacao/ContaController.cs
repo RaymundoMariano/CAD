@@ -10,10 +10,9 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using CAD.Domain.Models.Autenticacao;
 using CAD.Domain;
-using CAD.Domain.Contracts.Clients.Seguranca;
 using CAD.Domain.Models.Response;
 using CAD.Client;
-using CAD.Domain.Contracts.Clients.Autenticacao;
+using CAD.Domain.Contracts.UnitOfWorks;
 
 namespace CAD.UI.Controllers.Autenticacao
 {
@@ -29,12 +28,10 @@ namespace CAD.UI.Controllers.Autenticacao
         }
         private string Email { get { return User.FindFirst(ClaimTypes.Email).Value; } }
 
-        private readonly IAutenticacaoClient _autenticacaoClient;
-        private readonly ISegurancaClient _segurancaClient;
-        public ContaController(IAutenticacaoClient autenticacaoClient, ISegurancaClient segurancaClient)
+        private readonly IUnitOfWork _unitOfWork;
+        public ContaController(IUnitOfWork unitOfWork)
         {
-            _autenticacaoClient = autenticacaoClient;
-            _segurancaClient = segurancaClient;
+            _unitOfWork = unitOfWork;
         }
 
         #region Register
@@ -52,13 +49,13 @@ namespace CAD.UI.Controllers.Autenticacao
             {
                 if (ModelState.IsValid)
                 {
-                    registro = await _autenticacaoClient.RegisterAsync(register);
+                    registro = await _unitOfWork.Autenticacao.RegisterAsync(register);
 
                     foreach (var erro in registro.Errors) { ModelState.AddModelError("UserName", erro); }
 
                     if (ModelState.IsValid)
                     {
-                        registro.Seguranca = await _segurancaClient.ObterPerfilAsync("CadastroUnico", registro);
+                        registro.Seguranca = await _unitOfWork.Seguranca.ObterPerfilAsync("CadastroUnico", registro);
 
                         if (!await Autenticado(registro, "Register")) return View("Error");
                     }
@@ -98,13 +95,13 @@ namespace CAD.UI.Controllers.Autenticacao
             {
                 if (ModelState.IsValid)
                 {
-                    registro = await _autenticacaoClient.LoginAsync(login);
+                    registro = await _unitOfWork.Autenticacao.LoginAsync(login);
 
                     foreach (var erro in registro.Errors) { ModelState.AddModelError("Email", erro); }
 
                     if (ModelState.IsValid)
                     {
-                        registro.Seguranca = await _segurancaClient.ObterPerfilAsync("CadastroUnico", registro);
+                        registro.Seguranca = await _unitOfWork.Seguranca.ObterPerfilAsync("CadastroUnico", registro);
 
                         if (!await Autenticado(registro, "Login")) return View("Error");
                     }
@@ -147,7 +144,7 @@ namespace CAD.UI.Controllers.Autenticacao
             {
                 if (ModelState.IsValid)
                 {
-                    var errors = await _autenticacaoClient.TrocaSenhaAsync(trocaSenha);
+                    var errors = await _unitOfWork.Autenticacao.TrocaSenhaAsync(trocaSenha);
 
                     foreach (var erro in errors) { ModelState.AddModelError("SenhaAtual", erro); }
 

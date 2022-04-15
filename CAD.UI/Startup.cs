@@ -1,9 +1,11 @@
+using CAD.Client;
 using CAD.Client.Aplicacao;
 using CAD.Client.Autenticacao;
 using CAD.Client.Seguranca;
 using CAD.Domain.Contracts.Clients.Aplicacao;
 using CAD.Domain.Contracts.Clients.Autenticacao;
 using CAD.Domain.Contracts.Clients.Seguranca;
+using CAD.Domain.Contracts.UnitOfWorks;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -31,13 +33,15 @@ namespace CAD.UI
             //Serviços da Aplicação
             services.AddTransient<IPessoaClient, PessoaClient>();
             services.AddTransient<IEmpresaClient, EmpresaClient>();
-            services.AddTransient<IEnderecoClient, EnderecoClient>();
 
             //Serviços do Autenticador
             services.AddTransient<IAutenticacaoClient, AutenticacaoClient>();
 
             //Serviços do Seguranca
             services.AddTransient<ISegurancaClient, SegurancaClient>();
+
+            //Serviço de Unidade de Trabalho
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
 
             //Serviço de cookie na aplicação
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
