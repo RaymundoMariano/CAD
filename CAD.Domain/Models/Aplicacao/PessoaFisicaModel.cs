@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace CAD.Domain.Models.Aplicacao
 {
@@ -9,6 +10,8 @@ namespace CAD.Domain.Models.Aplicacao
             Socios = new HashSet<SocioModel>();
         }
 
+        [DisplayName("Id")]
+        public int PessoaFisicaId { get; set; }
         public string Cpf { get; set; }
         public int PessoaId { get; set; }
 

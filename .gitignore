@@ -290,3 +290,4 @@ Service/obj/CAD.Service.csproj.nuget.dgspec.json
 Service/obj/CAD.Service.csproj.nuget.g.props
 Service/obj/CAD.Service.csproj.nuget.g.targets
 Service/obj/project.assets.json
+CAD.UI/obj/Debug/net5.0/project.razor.json

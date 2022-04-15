@@ -29,13 +29,10 @@
                 <input asp-for="NomeMae" class="form-control" />
                 <span asp-validation-for="NomeMae" class="text-danger"></span>
             </div>
-            @if (Model.Cpf == null)
-            {
-                <div class="form-group">
-                    <label asp-for="Cpf" class="control-label"></label>
-                    <input id="cpf" asp-for="Cpf" class="form-control" />
-                </div>
-            }
+            <div class="form-group">
+                <label asp-for="Cpf" class="control-label"></label>
+                <input id="cpf" asp-for="Cpf" class="form-control" />
+            </div>
             <div class="form-group">
                 <input type="submit" value="Salvar" class="btn btn-primary" />
             </div>
