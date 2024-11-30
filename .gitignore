@@ -673,3 +673,4 @@ CAD.UI/Properties/ServiceDependencies/cadastroweb - Zip Deploy/profile.arm.json
 CAD.UI/bin/Debug/net9.0/appsettings.Development.json
 CAD.UI/bin/Release/net9.0/appsettings.Development.json
 CAD.UI/bin/Release/net9.0/linux-x64/appsettings.Development.json
+CAD.UI/obj/Release/net9.0/linux-x64/PubTmp/CAD.UI-20241130185255956.zip
