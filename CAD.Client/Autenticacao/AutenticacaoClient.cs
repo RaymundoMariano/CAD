@@ -4,6 +4,7 @@ using CAD.Domain.Models.Response;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 
@@ -11,7 +12,8 @@ namespace CAD.Client.Autenticacao
 {
     public class AutenticacaoClient : BaseClient, IAutenticacaoClient
     {
-        public AutenticacaoClient() : base("https://localhost:44305/api/usuarios/") { }
+        //public AutenticacaoClient() : base("https://localhost:7108/api/usuarios/") { }
+        public AutenticacaoClient() : base("https://autenticacaoapi-behkcsfnbrdkg2hb.brazilsouth-01.azurewebsites.net/api/usuarios/") { }
 
         #region LoginAsync
         public async Task<RegistroModel> LoginAsync(LoginModel login)
@@ -21,7 +23,9 @@ namespace CAD.Client.Autenticacao
             try
             {
                 base.NovaRota("login", null);
-                response = base.Response(await base.Client.PostAsJsonAsync("", login));
+                response = Response(await base.Client.PostAsJsonAsync("", login));
+
+                if (response.Errors != null && response.Errors.Count() != 0) throw new ClientException("");
 
                 return JsonConvert.DeserializeObject<RegistroModel>(response.ObjectRetorno.ToString());
             }
@@ -42,7 +46,7 @@ namespace CAD.Client.Autenticacao
             try
             {
                 base.NovaRota("register", null);
-                response = base.Response(await base.Client.PostAsJsonAsync("", register));
+                response = Response(await base.Client.PostAsJsonAsync("", register));
 
                 return JsonConvert.DeserializeObject<RegistroModel>(response.ObjectRetorno.ToString());
             }
@@ -68,7 +72,7 @@ namespace CAD.Client.Autenticacao
                     $"Nova senha não pode ser igual a senha atual!");
 
                 base.NovaRota("trocasenha", null);
-                response = base.Response(await base.Client.PostAsJsonAsync("", trocaSenha));
+                response = Response(await base.Client.PostAsJsonAsync("", trocaSenha));
 
                 return response.Errors;
             }

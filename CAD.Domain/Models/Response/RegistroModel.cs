@@ -5,7 +5,7 @@ namespace CAD.Domain.Models.Response
 {
     public class RegistroModel
     {
-        public SegurancaModel Seguranca { get; set; }
+        public SegurModel Seguranca { get; set; }
         public string Nome { get; set; }
         public string Email { get; set; }
         public string Token { get; set; }

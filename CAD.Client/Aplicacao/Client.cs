@@ -40,7 +40,7 @@ namespace CAD.Client.Aplicacao
         public async Task InsereAsync(T model, string token)
         {
             base.NovaRota("", token);
-            base.Response(await base.Client.PostAsJsonAsync("", model));
+            Response(await base.Client.PostAsJsonAsync("", model));
         }
         #endregion
 
@@ -48,7 +48,7 @@ namespace CAD.Client.Aplicacao
         public async Task UpdateAsync(int id, T model, string token)
         {
             base.NovaRota("/" + id, token);
-            base.Response(await base.Client.PutAsJsonAsync<T>("", model));
+            Response(await base.Client.PutAsJsonAsync<T>("", model));
         }
         #endregion
 
@@ -56,7 +56,7 @@ namespace CAD.Client.Aplicacao
         public async Task RemoveAsync(int id, string token)
         {
             base.NovaRota("/" + id, token);
-            base.Response(await base.Client.DeleteAsync(""));
+            Response(await base.Client.DeleteAsync(""));
         }
         #endregion
     }

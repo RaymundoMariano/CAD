@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using CAD.Domain.Models.Aplicacao;
+using System.ComponentModel.DataAnnotations;
 
 namespace CAD.Domain.Models.Seguranca
 {
-    public class SegurancaModel
+    public class SegurModel : _Model
     {
         [Required]
         public UsuarioModel Usuario { get; set; }

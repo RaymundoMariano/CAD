@@ -13,21 +13,21 @@ namespace CAD.Domain
         private string Mensagem { get; set; }
 
         #region Construtor
-        public Seguranca(UsuarioModel usuario, ModuloModel modulo, PerfilModel perfil) 
+        public Seguranca(UsuarioModel usuario, ModuloModel modulo, PerfilModel perfil)
         {
             Usuario = usuario;
             Modulo = modulo;
             Perfil = perfil;
-            
+
             if (Usuario == null)
             {
-                Mensagem = $"{ Usuario.Nome }! Voçê não está cadastrado no segurança";
+                Mensagem = $"{Usuario!.Nome}! Voçê não está cadastrado no segurança";
                 return;
             }
 
             if (Modulo == null)
             {
-                Mensagem = $"{ Usuario.Nome }! O modulo { Modulo.Nome } não está cadastrado no segurança";
+                Mensagem = $"{Usuario.Nome}! O modulo {Modulo!.Nome} não está cadastrado no segurança";
                 return;
             }
 
@@ -38,9 +38,9 @@ namespace CAD.Domain
 
             var pu = Usuario.PerfisUsuario.FirstOrDefault(pu =>
                 pu.UsuarioId == Usuario.UsuarioId && pu.ModuloId == Modulo.ModuloId);
-            if (pu == null || pu.Perfil.Nome == "Sem Perfil")
+            if (pu == null || pu.Perfil!.Nome == "Sem Perfil")
             {
-                Mensagem = $"{ Usuario.Nome }! Você não tem perfil definido para usar este modulo { Modulo.Nome }";
+                Mensagem = $"{Usuario.Nome}! Você não tem perfil definido para usar este modulo {Modulo.Nome}";
             }
         }
         #endregion
@@ -53,9 +53,9 @@ namespace CAD.Domain
         public string TemPermissao()
         {
             if (Mensagem != null && Mensagem != string.Empty) return Mensagem;
-            if (TemPermissaoPerfil() != null) return Mensagem;
-            if (TemPermissaoUsuario() != null) return Mensagem;
-            return null;
+            if (TemPermissaoPerfil() != null) return Mensagem!;
+            if (TemPermissaoUsuario() != null) return Mensagem!;
+            return null!;
         }
 
         /// <summary>
@@ -69,15 +69,14 @@ namespace CAD.Domain
                 mf.ModuloId == Modulo.ModuloId && mf.Formulario.Nome == formularioNome);
             if (mf == null)
             {
-                Mensagem = $"{ Usuario.Nome }! não foi encontrado o formulário { formularioNome } para este modulo { Modulo.Nome }";
-                return Mensagem;
+                return Mensagem = $"{Usuario.Nome}! não foi encontrado o formulário {formularioNome} para este modulo {Modulo.Nome}";
             }
 
             //Mensagem = null;
             if (TemPermissao() != null) return Mensagem;
             if (TemPermissaoPerfilFormulario(formularioNome) != null) return Mensagem;
             if (TemPermissaoUsuarioFormulario(formularioNome) != null) return Mensagem;
-            return null;
+            return null!;
         }
 
         /// <summary>
@@ -94,7 +93,7 @@ namespace CAD.Domain
                 mf.ModuloId == Modulo.ModuloId && mf.Formulario.Nome == formularioNome);
 
             bool existeEvento = false;
-            foreach (var fe in mf.Formulario.FormulariosEvento)
+            foreach (var fe in mf!.Formulario.FormulariosEvento)
             {
                 if (fe.Evento.Nome == eventoNome)
                 {
@@ -105,12 +104,12 @@ namespace CAD.Domain
 
             if (!existeEvento)
             {
-                return $"{ Usuario.Nome }! não foi encontrado o evento { eventoNome } para este formulário { formularioNome }";
+                return Mensagem = $"{Usuario.Nome}! não foi encontrado o evento {eventoNome} para este formulário {formularioNome}";
             }
 
             if (TemPermissaoPerfilEvento(formularioNome, eventoNome) != null) return Mensagem;
             if (TemPermissaoUsuarioEvento(formularioNome, eventoNome) != null) return Mensagem;
-            return null;
+            return null!;
         }
         #endregion
 
@@ -121,11 +120,12 @@ namespace CAD.Domain
                 rp.PerfilId == Perfil.PerfilId &&
                 rp.ModuloId == Modulo.ModuloId &&
                 rp.FormularioId == null &&
-                rp.EventoId == null);
-            
-            if (rp == null) return null;
+                rp.EventoId == null &&
+                rp.IsCheck);
 
-            return $"{ Usuario.Nome }! O seu perfil de { Perfil.Nome } não tem permissão de acesso a este modulo { Modulo.Nome }";
+            if (rp == null) return null!;
+
+            return Mensagem = $"{Usuario.Nome}! O seu perfil de {Perfil.Nome} não tem permissão de acesso ao modulo {Modulo.Nome}";
         }
         #endregion
 
@@ -136,11 +136,12 @@ namespace CAD.Domain
                 ru.UsuarioId == Usuario.UsuarioId &&
                 ru.ModuloId == Modulo.ModuloId &&
                 ru.FormularioId == null &&
-                ru.EventoId == null);
-            
-            if (ru == null) return null;
+                ru.EventoId == null &&
+                ru.IsCheck);
 
-            return $"{ Usuario.Nome }! Voçê não tem permissão de acesso a este modulo { Modulo.Nome }";
+            if (ru == null) return null!;
+
+            return Mensagem = $"{Usuario.Nome}! Voçê não tem permissão de acesso ao modulo {Modulo.Nome}";
         }
         #endregion
 
@@ -150,12 +151,13 @@ namespace CAD.Domain
             var rp = Perfil.RestricoesPerfil.FirstOrDefault(rp =>
                 rp.PerfilId == Perfil.PerfilId &&
                 rp.ModuloId == Modulo.ModuloId &&
-                rp.FormularioId == Formularios.Find(f => f.Nome == formularioNome).FormularioId &&
-                rp.EventoId == null);
-            
-            if (rp == null) return null;
+                rp.FormularioId == Formularios.Find(f => f.Nome == formularioNome)!.FormularioId &&
+                rp.EventoId == null &&
+                rp.IsCheck);
 
-            return $"{ Usuario.Nome }! O seu perfil de { Perfil.Nome } não tem permissão de acesso a este formulário { formularioNome }";
+            if (rp == null) return null!;
+
+            return Mensagem = $"{Usuario.Nome}! O seu perfil de {Perfil.Nome} não tem permissão para editar o formulário {formularioNome}";
         }
         #endregion
 
@@ -165,12 +167,13 @@ namespace CAD.Domain
             var ru = Usuario.RestricoesUsuario.FirstOrDefault(ru =>
                 ru.UsuarioId == Usuario.UsuarioId &&
                 ru.ModuloId == Modulo.ModuloId &&
-                ru.FormularioId == Formularios.Find(f => f.Nome == formularioNome).FormularioId &&
-                ru.EventoId == null);
+                ru.FormularioId == Formularios.Find(f => f.Nome == formularioNome)!.FormularioId &&
+                ru.EventoId == null &&
+                ru.IsCheck);
 
-            if (ru == null) return null;
+            if (ru == null) return null!;
 
-            return $"{ Usuario.Nome }! Voçê não tem permissão de acesso a este formulário { formularioNome }";
+            return Mensagem = $"{Usuario.Nome}! Voçê não tem permissão para editar o formulário {formularioNome}";
         }
         #endregion
 
@@ -182,12 +185,13 @@ namespace CAD.Domain
             var rp = Perfil.RestricoesPerfil.FirstOrDefault(rp =>
                 rp.PerfilId == Perfil.PerfilId &&
                 rp.ModuloId == Modulo.ModuloId &&
-                rp.FormularioId == Formularios.Find(f => f.Nome == formularioNome).FormularioId &&
-                rp.EventoId == eventos.Find(e => e.Nome == eventoNome).EventoId);
-            
-            if (rp == null) return null;
+                rp.FormularioId == Formularios.Find(f => f.Nome == formularioNome)!.FormularioId &&
+                rp.EventoId == eventos.Find(e => e.Nome == eventoNome)!.EventoId &&
+                rp.IsCheck);
 
-            return $"{ Usuario.Nome }! O seu perfil de { Perfil.Nome } não tem permissão de acesso a este evento { eventoNome }";
+            if (rp == null) return null!;
+
+            return Mensagem = $"{Usuario.Nome}! O seu perfil de {Perfil.Nome} não tem permissão de acesso ao evento {eventoNome}";
         }
         #endregion
 
@@ -199,12 +203,13 @@ namespace CAD.Domain
             var ru = Usuario.RestricoesUsuario.FirstOrDefault(ru =>
                 ru.UsuarioId == Usuario.UsuarioId &&
                 ru.ModuloId == Modulo.ModuloId &&
-                ru.FormularioId == Formularios.Find(f => f.Nome == formularioNome).FormularioId &&
-                ru.EventoId == eventos.Find(e => e.Nome == eventoNome).EventoId);
-            
-            if (ru == null) return null;
+                ru.FormularioId == Formularios.Find(f => f.Nome == formularioNome)!.FormularioId &&
+                ru.EventoId == eventos.Find(e => e.Nome == eventoNome)!.EventoId &&
+                ru.IsCheck);
 
-            return $"{ Usuario }! Voçê não tem permissão de acesso a este evento { eventoNome }";
+            if (ru == null) return null!;
+
+            return Mensagem = $"{Usuario.Nome}! Voçê não tem permissão de acesso ao evento {eventoNome}";
         }
         #endregion
 
@@ -215,8 +220,8 @@ namespace CAD.Domain
 
             var mf = Modulo.ModulosFormulario.FirstOrDefault(mf =>
                 mf.ModuloId == Modulo.ModuloId &&
-                mf.FormularioId == Formularios.Find(f => f.Nome == formularioNome).FormularioId);
-            foreach (var fe in mf.Formulario.FormulariosEvento)
+                mf.FormularioId == Formularios.Find(f => f.Nome == formularioNome)!.FormularioId);
+            foreach (var fe in mf!.Formulario.FormulariosEvento)
             {
                 eventos.Add(fe.Evento);
             }

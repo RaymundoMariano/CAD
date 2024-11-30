@@ -7,12 +7,13 @@ namespace CAD.Client.Aplicacao
 {
     public class PessoaClient : Client<PessoaModel>, IPessoaClient
     {
-        public PessoaClient() : base("https://localhost:44343/api/pessoas") { }
+        //public PessoaClient() : base("https://localhost:44343/api/pessoas") { }
+        public PessoaClient() : base("https://cadastroapi.azurewebsites.net/api/pessoas") { }
 
         public async Task ManterEnderecoAsync(int pessoaId, EnderecoModel enderecoModel, string token)
         {
             base.NovaRota("/PostEndereco?pessoaId=" + pessoaId, token);
-            base.Response(await base.Client.PostAsJsonAsync("", enderecoModel));
+            Response(await base.Client.PostAsJsonAsync("", enderecoModel));
         }
     }
 }

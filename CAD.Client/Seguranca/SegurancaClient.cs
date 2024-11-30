@@ -9,9 +9,9 @@ namespace CAD.Client.Seguranca
 {
     public class SegurancaClient : BaseClient, ISegurancaClient
     {
-        public SegurancaClient() : base("https://localhost:44366/api/usuarios") { }
+        public SegurancaClient() : base("https://segurancaapi.azurewebsites.net/api/usuarios") { }
 
-        public async Task<SegurancaModel> ObterPerfilAsync(string modulo, RegistroModel registro)
+        public async Task<SegurModel> ObterPerfilAsync(string modulo, RegistroModel registro)
         {
             var usuario = new UsuarioModel()
             {
@@ -20,9 +20,9 @@ namespace CAD.Client.Seguranca
             };
 
             base.NovaRota("/PostUsuario?modulo=" + modulo, registro.Token);
-            var response = base.Response(await base.Client.PostAsJsonAsync("", usuario));
+            var response = Response(await base.Client.PostAsJsonAsync("", usuario));
 
-            return JsonConvert.DeserializeObject<SegurancaModel>(response.ObjectRetorno.ToString());
+            return JsonConvert.DeserializeObject<SegurModel>(response.ObjectRetorno.ToString());
         }
     }
 } 

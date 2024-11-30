@@ -10,7 +10,6 @@ namespace CAD.Client
     {
         protected readonly string URI;
         protected HttpClient Client;
-
         protected BaseClient(string uri)
         {
             URI = uri;
@@ -35,7 +34,7 @@ namespace CAD.Client
         #endregion
 
         #region Response
-        protected ResponseModel Response(HttpResponseMessage httpResponse)
+        protected static ResponseModel Response(HttpResponseMessage httpResponse)
         {
             var conteudo = httpResponse.Content.ReadAsStringAsync().Result;
             var response = JsonConvert.DeserializeObject<ResponseModel>(conteudo);

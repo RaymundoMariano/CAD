@@ -6,6 +6,6 @@ namespace CAD.Domain.Contracts.Clients.Seguranca
 {
     public interface ISegurancaClient
     {
-        Task<SegurancaModel> ObterPerfilAsync(string modulo, RegistroModel registro);
+        Task<SegurModel> ObterPerfilAsync(string modulo, RegistroModel registro);
     }
 }

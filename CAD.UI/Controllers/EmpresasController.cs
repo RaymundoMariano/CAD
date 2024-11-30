@@ -3,7 +3,6 @@ using CAD.Domain;
 using CAD.Domain.Contracts.UnitOfWorks;
 using CAD.Domain.Enums;
 using CAD.Domain.Models.Aplicacao;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
@@ -13,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CAD.UI.Controllers
 {
-    public class EmpresasController : Controller
+    public class EmpresasController(IUnitOfWork unitOfWork) : Controller
     {
         private Seguranca Seguranca
         {
@@ -24,11 +23,7 @@ namespace CAD.UI.Controllers
         }
         private string Token { get { return User.FindFirstValue("Token"); } }
 
-        private readonly IUnitOfWork _unitOfWork;
-        public EmpresasController(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-        }
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
         #region Index
         // GET: EmpresasController
@@ -47,7 +42,7 @@ namespace CAD.UI.Controllers
 
         #region Details
         // GET: EmpresasController/Details/5
-        [AllowAnonymous]
+        //[AllowAnonymous]
         public async Task<ActionResult> Details(int id)
         {
             try
@@ -87,7 +82,8 @@ namespace CAD.UI.Controllers
             }
             catch (ClientException ex)
             {
-                ModelState.AddModelError("Nome", ex.Message);
+                ModelState.AddModelError("Cgc", ex.Message);
+                ViewBag.Tipos = EnumService<ETipoEmpresa>.GetOptions<ETipoEmpresa>();
                 return View(empresa);
             }
             catch (Exception) { return Error(null); }
@@ -157,7 +153,7 @@ namespace CAD.UI.Controllers
 
         #region EditEndereco
         // GET: EmpresasController/EditEndereco
-        [AllowAnonymous]
+        //[AllowAnonymous]
         public async Task<ActionResult> EditEndereco(int id)
         {
             try
@@ -191,7 +187,7 @@ namespace CAD.UI.Controllers
 
         #region IndexFilial
         // GET: EmpresasController/IndexFilial
-        [AllowAnonymous]
+        //[AllowAnonymous]
         public async Task<ActionResult> IndexFilial(int empresaId)
         {
             return await GetEmpresa(empresaId);
@@ -200,7 +196,7 @@ namespace CAD.UI.Controllers
 
         #region EditFilial
         // GET: EmpresasController/EditFilial
-        [AllowAnonymous]
+        //[AllowAnonymous]
         public async Task<ActionResult> EditFilial(int empresaId)
         {
             try
@@ -232,7 +228,7 @@ namespace CAD.UI.Controllers
 
         #region IndexSocio
         // GET: EmpresasController/IndexSocio
-        [AllowAnonymous]
+        //[AllowAnonymous]
         public async Task<ActionResult> IndexSocio(int empresaId)
         {
             return await GetEmpresa(empresaId);
@@ -241,7 +237,7 @@ namespace CAD.UI.Controllers
 
         #region EditSocio
         // GET: EmpresasController/EditSocio
-        [AllowAnonymous]
+        //[AllowAnonymous]
         public async Task<ActionResult> EditSocio(int empresaId)
         {
             try

@@ -11,13 +11,15 @@ namespace CAD.Client.Aplicacao
 {
     public class EmpresaClient : Client<EmpresaModel>, IEmpresaClient
     {
-        public EmpresaClient() : base("https://localhost:44343/api/empresas") { }
+        //public EmpresaClient() : base("https://localhost:44343/api/empresas") { }
+        //public EmpresaClient() : base("https://localhost:44343/api/empresas") { }
+        public EmpresaClient() : base("https://cadastroapi.azurewebsites.net/api/empresas") { }
 
         #region Endereco
         public async Task ManterEnderecoAsync(int empresaId, EnderecoModel enderecoModel, string token)
         {
             base.NovaRota("/PostEndereco?empresaId=" + empresaId, token);
-            base.Response(await base.Client.PostAsJsonAsync("", enderecoModel));
+            Response(await base.Client.PostAsJsonAsync("", enderecoModel));
         }
         #endregion
 
@@ -35,7 +37,7 @@ namespace CAD.Client.Aplicacao
         public async Task ManterFiliaisAsync(int empresaId, List<FilialModel> filiaisModel, string token)
         {
             base.NovaRota("/PostFiliais?empresaId=" + empresaId, token);
-            base.Response(await base.Client.PostAsJsonAsync("", filiaisModel));
+            Response(await base.Client.PostAsJsonAsync("", filiaisModel));
         }
         #endregion
 
@@ -53,7 +55,7 @@ namespace CAD.Client.Aplicacao
         public async Task ManterSociosAsync(int empresaId, List<PessoaModel> pessoasModel, string token)
         {
             base.NovaRota("/PostSocios?empresaId=" + empresaId, token);
-            base.Response(await base.Client.PostAsJsonAsync("", pessoasModel));
+            Response(await base.Client.PostAsJsonAsync("", pessoasModel));
         }
         #endregion        
     }

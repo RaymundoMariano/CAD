@@ -3,7 +3,6 @@ using CAD.Domain;
 using CAD.Domain.Contracts.UnitOfWorks;
 using CAD.Domain.Enums;
 using CAD.Domain.Models.Aplicacao;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
@@ -12,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CAD.UI.Controllers
 {
-    public class PessoasController : Controller
+    public class PessoasController(IUnitOfWork unitOfWork) : Controller
     {
         private Seguranca Seguranca
         {
@@ -23,11 +22,7 @@ namespace CAD.UI.Controllers
         }
         private string Token { get { return User.FindFirstValue("Token"); } }
 
-        private readonly IUnitOfWork _unitOfWork;
-        public PessoasController(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-        }
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
         #region Index
         // GET: PessoasController
@@ -46,7 +41,7 @@ namespace CAD.UI.Controllers
 
         #region Details
         // GET: PessoasController/Details/5
-        [AllowAnonymous]
+        //[AllowAnonymous]
         public async Task<ActionResult> Details(int id)
         {
             try
@@ -153,7 +148,7 @@ namespace CAD.UI.Controllers
 
         #region IndexEndereco
         // GET: PessoasController/IndexEndereco
-        [AllowAnonymous]
+        //[AllowAnonymous]
         public async Task<ActionResult> IndexEndereco(int id)
         {
             ViewBag.Id = id;
@@ -167,7 +162,7 @@ namespace CAD.UI.Controllers
 
         #region EditEndereco
         // GET: PessoasController/EditEndereco
-        [AllowAnonymous]
+        //[AllowAnonymous]
         public async Task<ActionResult> EditEndereco(int enderecoId, int pessoaId)
         {
             ViewBag.Id = pessoaId;

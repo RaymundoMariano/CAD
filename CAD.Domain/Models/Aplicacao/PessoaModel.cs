@@ -9,8 +9,8 @@ namespace CAD.Domain.Models.Aplicacao
     {
         public PessoaModel()
         {
-            EnderecoPessoas = new HashSet<EnderecoPessoaModel>();
-            PessoaFisicas = new HashSet<PessoaFisicaModel>();
+            EnderecoPessoas = [];
+            PessoaFisicas = [];
         }
 
         [DisplayName("Id")]

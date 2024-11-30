@@ -7,7 +7,7 @@ namespace CAD.Domain.Models.Aplicacao
     {
         public PessoaFisicaModel()
         {
-            Socios = new HashSet<SocioModel>();
+            Socios = [];
         }
 
         [DisplayName("Id")]

@@ -2,11 +2,12 @@
 {
     public partial class RestricaoUsuarioModel
     {
-        public int Id { get; set; }
-        public int UsuarioId { get; set; }
-        public int? ModuloId { get; set; }
-        public int? FormularioId { get; set; }
-        public int? EventoId { get; set; }
+        public long Id { get; set; }
+        public long UsuarioId { get; set; }
+        public long? ModuloId { get; set; }
+        public long? FormularioId { get; set; }
+        public long? EventoId { get; set; }
+        public bool IsCheck { get; set; }
 
         public virtual EventoModel Evento { get; set; }
         public virtual FormularioModel Formulario { get; set; }

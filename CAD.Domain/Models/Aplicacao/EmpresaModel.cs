@@ -8,8 +8,8 @@ namespace CAD.Domain.Models.Aplicacao
     {
         public EmpresaModel()
         {
-            Filiais = new HashSet<FilialModel>();
-            Socios = new HashSet<SocioModel>();
+            Filiais = [];
+            Socios = [];
         }
 
         [DisplayName("Id")]

@@ -6,7 +6,7 @@ namespace CAD.Domain.Models.Aplicacao
     {
         public CepModel()
         {
-            Enderecos = new HashSet<EnderecoModel>();
+            Enderecos = [];
         }
 
         public string CEP { get; set; }
